@@ -1,0 +1,24 @@
+#!/bin/bash
+echo -e "\033[1m \033[38;5;220m                .qwwwwp.                  |
+            ..dWWWWWWWWWWWWb..             |
+         qqWWWWWWWWWWWWWWWWWWWWpp          |
+      .WWWWWWWWWWWWWWWWWWWWWWWWWWWW.       |\033[38;5;208m
+    .WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.     |      
+   .HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH.    |           
+  +WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW+   |\033[38;5;196m
+ .HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH.  |                
+ WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW  |                    
+qWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWp | \033[38;5;200m
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW |\033[38;5;165m 
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW |                    
+ ________________________________________  |                    
+ WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW  |                      
+ 'HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH'  |\033[38;5;56m
+  +HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH+   |                      
+   ''''''''''''''''''''''''''''''''''''    |               
+    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'     |\033[38;5;20m
+      \"WWWWWWWWWWWWWWWWWWWWWWWWWWWW\"       |                
+         **WWWWWWWWWWWWWWWWWWWW**          |            
+            \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"             |              
+                 ''''''''                  |                               
+\033[38;5;15m"

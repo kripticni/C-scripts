@@ -1,0 +1,24 @@
+#!/bin/bash
+echo -e "\033[1m \033[38;5;220m                 .qwwwwp.                   \033[38;5;15m|\033[38;5;220m
+             ..dWWWWWWWWWWWWb..              \033[38;5;15m|\033[38;5;220m
+          qqWWWWWWWWWWWWWWWWWWWWpp           \033[38;5;15m|\033[38;5;220m
+       .WWWWWWWWWWWWWWWWWWWWWWWWWWWW.        \033[38;5;15m|\033[38;5;208m
+     .WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW.      \033[38;5;15m|\033[38;5;208m
+    .HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH.     \033[38;5;15m|\033[38;5;208m           
+   +WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW+    \033[38;5;15m|\033[38;5;196m
+  .HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH.   \033[38;5;15m|\033[38;5;196m                
+  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW   \033[38;5;15m|\033[38;5;196m                    
+ qWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWp  \033[38;5;15m|\033[38;5;200m
+ WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW  \033[38;5;15m|\033[38;5;165m 
+ WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW  \033[38;5;15m|\033[38;5;165m                    
+  ________________________________________   \033[38;5;15m|\033[38;5;165m                    
+  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW   \033[38;5;15m|\033[38;5;165m                      
+  'HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH'   \033[38;5;15m|\033[38;5;56m
+   +HWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWH+    \033[38;5;15m|\033[38;5;56m        
+    ''''''''''''''''''''''''''''''''''''     \033[38;5;15m|\033[38;5;56m               
+     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'      \033[38;5;15m|\033[38;5;20m
+       \"WWWWWWWWWWWWWWWWWWWWWWWWWWWW\"        \033[38;5;15m|\033[38;5;20m                
+          **WWWWWWWWWWWWWWWWWWWW**           \033[38;5;15m|\033[38;5;20m            
+             \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"              \033[38;5;15m|\033[38;5;20m              
+                  ''''''''                   \033[38;5;15m|\033[38;5;20m                               
+\033[38;5;15m"
