@@ -159,6 +159,8 @@ void NtreeRead(Ntree* root, int passdown, List* lista){
   if(root->nine!=NULL){NtreeRead(root->nine, passdown*10+9, lista); check=1;}
   if(check==0){
     List* novi=(List*)malloc(sizeof(List));
+    novi->freq=root->count;
+    novi->value=passdown;
     novi->sledeci=lista->sledeci;
     lista->sledeci=novi;
   }
