@@ -199,6 +199,38 @@ void stampaj(List* lista){
   }
 }
 
+void FindRemove(List* lista, int x){
+  while(lista!=NULL){
+    if(lista->sledeci->value==x){
+      List* brisi=lista->sledeci;
+      lista->sledeci=lista->sledeci->sledeci;
+      free(brisi);
+    }
+    lista=lista->sledeci;
+  }
+}
+
+void kmp(char* str, int m, int* niz){
+  int j=0;
+  int i=1;
+  niz[0]=0;
+  while(i<m){
+    if(str[i]==str[j]){
+      niz[i]=j+1;
+      i++;
+      j++;
+    }else{
+      if(j!=0)j=niz[j-1];
+      else{
+        niz[i]=0;
+        i++;
+      }
+    }
+  }
+}
+
+
+
 int main(){
   Ntree* root=(Ntree*)malloc(sizeof(Ntree));
   root->count=0;
@@ -241,5 +273,65 @@ int main(){
 
   printf("Unique characters: %i", n);
   stampaj(lista->sledeci);
+  //finished initial freq search
+  //TODO: Make it work when there is leading zeroes, likely needs structural changes in both the writing and reading function
+  //TODO: Make it work when there is two different characters that begin in the same way, probably just checking the sums would be sufficient but its gonna take a hit on performance
+  
+
+  char str[1023];
+  char replace[1022];
+
+  printf("\n\nEnter a string which you want to substitute: ");
+  fgets(str, 1022, stdin);
+  printf("Enter a string to replace with: ");
+  fgets(replace, 1021, stdin);
+
+  str[strcspn(str, "\n")]='\0';
+  replace[strcspn(replace, "\n")]='\0';
+  int slen=strlen(str);
+  int rlen=strlen(replace);
+
+  int kmptable[slen];
+  kmp(str, slen, kmptable);
+
+  int j=0;
+  i=0;
+  while(i<n){
+    if(str[j]==input[i]){
+      i++;
+      j++;
+    }else{
+      if(j!=0) j=kmptable[j-1];
+      else i++;
+    }
+  if(j==slen){
+      printf("\nNadjen na %i", i-j);
+      int start=i-j;
+      int diff=slen-rlen;
+      if (diff > 0) {
+        int z = start;
+        while (z < len - diff) {
+          input[z] = input[z + diff];
+          z++;
+        }
+      } else if (diff < 0) {
+        int z = len - 1;
+        while (z >= start - diff) {
+          input[z] = input[z + diff];
+          z--;
+        }
+      }
+
+      for (int z = 0; z < rlen; z++) {
+        input[start + z] = replace[z];
+      }
+
+      input[len - diff] = '\0';
+      j=kmptable[j-1];
+    }
+  }
+
+
+  puts(input);
   return 0;
 }
