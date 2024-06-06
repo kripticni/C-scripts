@@ -4,12 +4,12 @@
 #include <stdbool.h>
 
 typedef struct fifo{
-  int podatak;
+  char podatak;
   struct fifo* sledeci;
 }Fifo;
 
 typedef struct list{
-  int value;
+  char value[32];
   int freq;
   struct list* sledeci;
 }List;
@@ -145,22 +145,23 @@ void NtreeAlloc(Ntree* root, Fifo **pocetak, Fifo** kraj){
   }
 }
 
-void NtreeRead(Ntree* root, int passdown, List* lista){
+void NtreeRead(Ntree* root, char passdown[], List* lista, int i){
   bool check=0;
-  if(root->zero!=NULL){NtreeRead(root->zero, passdown*10, lista); check=1;}
-  if(root->one!=NULL){NtreeRead(root->one, passdown*10+1,lista); check=1;}
-  if(root->two!=NULL){NtreeRead(root->two, passdown*10+2, lista); check=1;}
-  if(root->three!=NULL){NtreeRead(root->three, passdown*10+3, lista); check=1;}
-  if(root->four!=NULL){NtreeRead(root->four, passdown*10+4, lista); check=1;}
-  if(root->five!=NULL){NtreeRead(root->five, passdown*10+5, lista); check=1;}
-  if(root->six!=NULL){NtreeRead(root->six, passdown*10+6, lista); check=1;}
-  if(root->seven!=NULL){NtreeRead(root->seven, passdown*10+7, lista); check=1;}
-  if(root->eight!=NULL){NtreeRead(root->eight, passdown*10+8, lista); check=1;}
-  if(root->nine!=NULL){NtreeRead(root->nine, passdown*10+9, lista); check=1;}
+  if(root->zero!=NULL){passdown[i]='0',NtreeRead(root->zero, passdown, lista, i+1); check=1;}
+  if(root->one!=NULL){passdown[i]='1',NtreeRead(root->one, passdown, lista, i+1); check=1;}
+  if(root->two!=NULL){passdown[i]='2',NtreeRead(root->two, passdown, lista, i+1); check=1;}
+  if(root->three!=NULL){passdown[i]='3',NtreeRead(root->three, passdown, lista, i+1); check=1;}
+  if(root->four!=NULL){passdown[i]='4',NtreeRead(root->four, passdown, lista, i+1); check=1;}
+  if(root->five!=NULL){passdown[i]='5',NtreeRead(root->five, passdown, lista, i+1); check=1;}
+  if(root->six!=NULL){passdown[i]='6',NtreeRead(root->six, passdown, lista, i+1); check=1;}
+  if(root->seven!=NULL){passdown[i]='7',NtreeRead(root->seven, passdown, lista, i+1); check=1;}
+  if(root->eight!=NULL){passdown[i]='8', NtreeRead(root->eight, passdown, lista, i+1); check=1;}
+  if(root->nine!=NULL){passdown[i]='9', NtreeRead(root->nine, passdown, lista, i+1); check=1;}
   if(check==0){
+    passdown[i]='\0';
     List* novi=(List*)malloc(sizeof(List));
+    strcpy(novi->value, passdown);
     novi->freq=root->count;
-    novi->value=passdown;
     novi->sledeci=lista->sledeci;
     lista->sledeci=novi;
   }
@@ -175,15 +176,16 @@ void SelectionSortAndSize(List* lista, int* n){
     List* j=i->sledeci;
     List* min=i;
     while(j!=NULL){
-      if(j->freq<min->freq){
+      if(j->freq>min->freq){
         min=j;
       }
       j=j->sledeci;
     }
-    int pom=min->value;
-    min->value=i->value;
-    i->value=pom;
-    pom=min->freq;
+    char str[32];
+    strcpy(str, min->value);
+    strcpy(min->value, i->value);
+    strcpy(i->value, str);
+    int pom=min->freq;
     min->freq=i->freq;
     i->freq=pom;
     i=i->sledeci;
@@ -194,14 +196,14 @@ void SelectionSortAndSize(List* lista, int* n){
 void stampaj(List* lista){
   printf("CHAR : FREQ\n");
   while(lista!=NULL){
-    printf("%i:%i\n", lista->value, lista->freq);
+    printf("%s:%i\n", lista->value, lista->freq);
     lista=lista->sledeci;
   }
 }
 
-void FindRemove(List* lista, int x){
+void FindRemove(List* lista, char x[32]){
   while(lista!=NULL){
-    if(lista->sledeci->value==x){
+    if(strcmp(lista->sledeci->value, x)==0){
       List* brisi=lista->sledeci;
       lista->sledeci=lista->sledeci->sledeci;
       free(brisi);
@@ -245,28 +247,35 @@ int main(){
   int len=strlen(input);
   int i=0;
 
+  int maxstrlen=0;
+  int substrlen;
   //while(input[i]==' '){i++;}
   //int depth=i;
   //while(input[i]!=' '){i++;}
   //depth=i-depth+1;
   while(i<len && input[i]!='\0'){
     if(input[i]!=' ' && input[i]!='\0'){
+      substrlen=i;
       do{
       insert(&pocetak, &kraj, ((int)input[i])-48);
       i++;
       }while(input[i]!=' ' && input[i]!='\0');
+      substrlen=i-substrlen;
+      if(substrlen>maxstrlen) maxstrlen=substrlen;
       NtreeAlloc(root, &pocetak, &kraj);
     }else{
       i++;
     }
   }
+  maxstrlen=maxstrlen+1; //for the terminator
 
   List* lista=(List*)malloc(sizeof(List));
-  lista->value=-1;
+  strcpy(lista->value, "\0");
   lista->freq=root->count;
   lista->sledeci=NULL;
   
-  NtreeRead(root, 0, lista);
+  char passdown[maxstrlen];
+  NtreeRead(root, passdown, lista, 0);
 
   int n=0;
   SelectionSortAndSize(lista->sledeci, &n);
@@ -330,7 +339,7 @@ int main(){
       j=kmptable[j-1];
     }
   }
-
+  FindRemove(lista, str);
 
   puts(input);
   return 0;
