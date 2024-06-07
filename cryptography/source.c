@@ -26,6 +26,7 @@ typedef struct ntree{
   struct ntree* eight;
   struct ntree* nine;
   int count;
+  int acount;
 }Ntree;
 
 void insert(Fifo **pocetak, Fifo **kraj, int x){
@@ -143,28 +144,46 @@ void NtreeAlloc(Ntree* root, Fifo **pocetak, Fifo** kraj){
         break;
     }
   }
+  root->acount++;
 }
 
 void NtreeRead(Ntree* root, char passdown[], List* lista, int i){
-  bool check=0;
-  if(root->zero!=NULL){passdown[i]='0',NtreeRead(root->zero, passdown, lista, i+1); check=1;}
-  if(root->one!=NULL){passdown[i]='1',NtreeRead(root->one, passdown, lista, i+1); check=1;}
-  if(root->two!=NULL){passdown[i]='2',NtreeRead(root->two, passdown, lista, i+1); check=1;}
-  if(root->three!=NULL){passdown[i]='3',NtreeRead(root->three, passdown, lista, i+1); check=1;}
-  if(root->four!=NULL){passdown[i]='4',NtreeRead(root->four, passdown, lista, i+1); check=1;}
-  if(root->five!=NULL){passdown[i]='5',NtreeRead(root->five, passdown, lista, i+1); check=1;}
-  if(root->six!=NULL){passdown[i]='6',NtreeRead(root->six, passdown, lista, i+1); check=1;}
-  if(root->seven!=NULL){passdown[i]='7',NtreeRead(root->seven, passdown, lista, i+1); check=1;}
-  if(root->eight!=NULL){passdown[i]='8', NtreeRead(root->eight, passdown, lista, i+1); check=1;}
-  if(root->nine!=NULL){passdown[i]='9', NtreeRead(root->nine, passdown, lista, i+1); check=1;}
-  if(check==0){
+  if(root->zero!=NULL)passdown[i]='0',NtreeRead(root->zero, passdown, lista, i+1);
+  if(root->one!=NULL)passdown[i]='1',NtreeRead(root->one, passdown, lista, i+1);
+  if(root->two!=NULL)passdown[i]='2',NtreeRead(root->two, passdown, lista, i+1);
+  if(root->three!=NULL)passdown[i]='3',NtreeRead(root->three, passdown, lista, i+1);
+  if(root->four!=NULL)passdown[i]='4',NtreeRead(root->four, passdown, lista, i+1);
+  if(root->five!=NULL)passdown[i]='5',NtreeRead(root->five, passdown, lista, i+1);
+  if(root->six!=NULL)passdown[i]='6',NtreeRead(root->six, passdown, lista, i+1);
+  if(root->seven!=NULL)passdown[i]='7',NtreeRead(root->seven, passdown, lista, i+1);
+  if(root->eight!=NULL)passdown[i]='8', NtreeRead(root->eight, passdown, lista, i+1);
+  if(root->nine!=NULL)passdown[i]='9', NtreeRead(root->nine, passdown, lista, i+1);
+  if(root->acount>0){
     passdown[i]='\0';
     List* novi=(List*)malloc(sizeof(List));
     strcpy(novi->value, passdown);
-    novi->freq=root->count;
+    novi->freq=root->acount;
     novi->sledeci=lista->sledeci;
     lista->sledeci=novi;
   }
+}
+
+void NtreeFree(Ntree* root){
+    if(root == NULL){
+        return;
+    }
+    NtreeFree(root->zero);
+    NtreeFree(root->one);
+    NtreeFree(root->two);
+    NtreeFree(root->three);
+    NtreeFree(root->four);
+    NtreeFree(root->five);
+    NtreeFree(root->six);
+    NtreeFree(root->seven);
+    NtreeFree(root->eight);
+    NtreeFree(root->nine);
+
+    free(root);
 }
 
 //i=0;i<n;i++
@@ -201,15 +220,22 @@ void stampaj(List* lista){
   }
 }
 
-void FindRemove(List* lista, char x[32]){
-  while(lista!=NULL){
-    if(strcmp(lista->sledeci->value, x)==0){
-      List* brisi=lista->sledeci;
-      lista->sledeci=lista->sledeci->sledeci;
-      free(brisi);
+void FindRemove(List** lista, char x[32]) {
+    while (*lista != NULL && (*lista)->sledeci != NULL) {
+        if (strcmp((*lista)->sledeci->value, x) == 0) {
+            List* brisi = (*lista)->sledeci;
+            (*lista)->sledeci = (*lista)->sledeci->sledeci;
+            free(brisi);
+        }
+        else {
+            *lista = (*lista)->sledeci;
+        }
     }
-    lista=lista->sledeci;
-  }
+    if (*lista != NULL && strcmp((*lista)->value, x) == 0) {
+        List* brisi = *lista;
+        *lista = (*lista)->sledeci;
+        free(brisi);
+    }
 }
 
 void kmp(char* str, int m, int* niz){
@@ -234,16 +260,45 @@ void kmp(char* str, int m, int* niz){
 
 
 int main(){
-  Ntree* root=(Ntree*)malloc(sizeof(Ntree));
-  root->count=0;
+  FILE* dat;
 
   Fifo* pocetak=NULL;
   Fifo* kraj=NULL;
 
-  char input[1024];
-  fgets(input,1023,stdin);
-  input[strcspn(input,"\n")]='\0';
+  char odluka[128];
+  printf("Unesite put do datoteke, ili stdin za unos iz programa: ");
+  fgets(odluka, 127, stdin);
+  odluka[strcspn(odluka,"\n")]='\0';
 
+
+  char input[1024];
+
+  if(strcmp(odluka, "stdin")==0){ 
+    fgets(input,1023,stdin);
+    input[strcspn(input,"\n")]='\0';
+  }else{
+    dat=fopen(odluka, "r");
+    if (!dat) {
+      fprintf(stderr, "Greska pri otvaranju %s\n", odluka);
+      exit(1);
+    }
+    int i = 0;
+    while (fscanf(dat, "%c", &input[i]) == 1) {
+        i++;
+    }
+    input[i] = '\0';
+    fclose(dat);
+  }
+
+  Ntree* root;
+  start:
+
+  root=(Ntree*)malloc(sizeof(Ntree));
+  root->count=0;
+
+  
+  //ovaj deo funkcionise kao loop
+  printf("\nUspesno izvrseno.\n");
   int len=strlen(input);
   int i=0;
 
@@ -254,12 +309,12 @@ int main(){
   //while(input[i]!=' '){i++;}
   //depth=i-depth+1;
   while(i<len && input[i]!='\0'){
-    if(input[i]!=' ' && input[i]!='\0'){
+    if(input[i]!=' ' && input[i]!='\n' && input[i]!='\0'){
       substrlen=i;
       do{
       insert(&pocetak, &kraj, ((int)input[i])-48);
       i++;
-      }while(input[i]!=' ' && input[i]!='\0');
+      }while(input[i]!=' ' && input[i]!='\0' && input[i]!='\n');
       substrlen=i-substrlen;
       if(substrlen>maxstrlen) maxstrlen=substrlen;
       NtreeAlloc(root, &pocetak, &kraj);
@@ -280,16 +335,14 @@ int main(){
   int n=0;
   SelectionSortAndSize(lista->sledeci, &n);
 
-  printf("Unique characters: %i", n);
+  printf("Unique characters: %i\n", n);
   stampaj(lista->sledeci);
   //finished initial freq search
-  //TODO: Make it work when there is leading zeroes, likely needs structural changes in both the writing and reading function
-  //TODO: Make it work when there is two different characters that begin in the same way, probably just checking the sums would be sufficient but its gonna take a hit on performance
-  
 
   char str[1023];
   char replace[1022];
 
+  while (getchar()!='\n');
   printf("\n\nEnter a string which you want to substitute: ");
   fgets(str, 1022, stdin);
   printf("Enter a string to replace with: ");
@@ -305,7 +358,7 @@ int main(){
 
   int j=0;
   i=0;
-  while(i<n){
+  while(i<len){
     if(str[j]==input[i]){
       i++;
       j++;
@@ -313,34 +366,48 @@ int main(){
       if(j!=0) j=kmptable[j-1];
       else i++;
     }
-  if(j==slen){
-      printf("\nNadjen na %i", i-j);
-      int start=i-j;
-      int diff=slen-rlen;
-      if (diff > 0) {
-        int z = start;
-        while (z < len - diff) {
-          input[z] = input[z + diff];
-          z++;
-        }
-      } else if (diff < 0) {
-        int z = len - 1;
-        while (z >= start - diff) {
-          input[z] = input[z + diff];
-          z--;
-        }
+    if(j==slen){
+      if((input[i-j-1]!=' ' && i-j!=0) || (input[i]!=' ' && i!=len))goto skip;
+      //printf("\nNadjen na %i\n", i-j);
+      int start = i - j;
+      int end = start + rlen;
+      if (rlen > slen) {
+        memmove(&input[start + rlen], &input[start + slen], len - start - slen + 1);
+      } else if (rlen < slen) {
+        memmove(&input[end], &input[start + slen], len - start - slen + 1);
       }
 
-      for (int z = 0; z < rlen; z++) {
-        input[start + z] = replace[z];
-      }
+      strncpy(&input[start], replace, rlen);
 
-      input[len - diff] = '\0';
+      len = strlen(input);
+    skip:
       j=kmptable[j-1];
     }
   }
-  FindRemove(lista, str);
-
+  FindRemove(&lista, str);
   puts(input);
+
+  printf("Napisi \"write\" da bi uneo promene u datoteku, bilosta drugo za nastavak: ");
+  char izbor[7];
+  fgets(izbor, 6, stdin);
+  if(strcmp(izbor,"write")==0){
+    if(strcmp(odluka,"stdin")==0){
+      getchar();
+      printf("Unesite ime datoteke: ");
+      fgets(odluka, 127, stdin);
+      odluka[strcspn(odluka, "\n")] = '\0';
+    }
+    dat=fopen(odluka,"w");
+    if (!dat) {
+      fprintf(stderr, "Greska pri otvaranju %s\n", odluka);
+      exit(1);
+    }
+    fprintf(dat, "%s", input);
+    fclose(dat);
+  }else{
+    NtreeFree(root);
+    root=NULL;
+    goto start;
+  }
   return 0;
 }
