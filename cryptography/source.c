@@ -2,50 +2,69 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef struct fifo{
-  char podatak;
-  struct fifo* sledeci;
-}Fifo;
+typedef struct head{
+  struct node* zero;
+  struct node* one;
+  int freq;
+  int afreq;
+}Head;
+
+typedef struct node{
+  struct tail* zero;
+  struct tail* one;
+  struct tail* two;
+  struct tail* three;
+  struct tail* four;
+  struct tail* five;
+  struct tail* six;
+  struct tail* seven;
+  struct tail* eight;
+  struct tail* nine;
+}Node;
+
+typedef struct tail{
+  struct head* zero;
+  struct head* one;
+  struct head* two;
+  struct head* three;
+  struct head* four;
+  struct head* five;
+  struct head* six;
+  struct head* seven;
+  struct head* eight;
+  struct head* nine;
+}Tail;
+
+typedef struct pipe{
+  uint8_t podatak;
+  struct pipe* sledeci;
+}Pipe;
 
 typedef struct list{
-  char value[32];
-  int freq;
+  char str[128];
+  int afreq;
   struct list* sledeci;
 }List;
 
-typedef struct ntree{
-  struct ntree* zero;
-  struct ntree* one;
-  struct ntree* two;
-  struct ntree* three;
-  struct ntree* four;
-  struct ntree* five;
-  struct ntree* six;
-  struct ntree* seven;
-  struct ntree* eight;
-  struct ntree* nine;
-  int count;
-  int acount;
-}Ntree;
-
-void insert(Fifo **pocetak, Fifo **kraj, int x){
-  Fifo* novi=(Fifo*)malloc(sizeof(Fifo));
+void make(Pipe** pocetak, Pipe** kraj, int x){
+  Pipe* novi=(Pipe*)malloc(sizeof(Pipe*));
   novi->sledeci=NULL;
   novi->podatak=x;
-  if((*pocetak)==NULL){
-    (*pocetak)=novi;
-    (*kraj)=novi;
-  }
+  (*pocetak)=novi;
+  (*kraj)=novi;
+}
+
+void insert(Pipe **kraj, int x){
+  Pipe* novi=(Pipe*)malloc(sizeof(Pipe));
+  novi->sledeci=NULL;
+  novi->podatak=x;
   (*kraj)->sledeci=novi;
   (*kraj)=novi;
 }
 
-int delete(Fifo **pocetak, Fifo **kraj){
-  if((*pocetak)==NULL){
-    printf("Fifo je prazan.");
-    return -1;
-  }
+int delete(Pipe **pocetak, Pipe **kraj){
   int retval=(*pocetak)->podatak;
   if((*pocetak)==(*kraj)){
     free((*pocetak));
@@ -53,190 +72,108 @@ int delete(Fifo **pocetak, Fifo **kraj){
     (*kraj)=NULL;
     return retval;
   }
-  Fifo* novi=(*pocetak);
+  Pipe* novi=(*pocetak);
   (*pocetak)=(*pocetak)->sledeci;
   free(novi);
   return retval;
 }
 
-int readFifo(Fifo **pocetak, Fifo **kraj){
-  int retval=delete(pocetak, kraj);
-  while((*pocetak)!=NULL){
-    retval=retval*10+delete(pocetak, kraj);
-  }
-  return retval;
-}
-
-void NtreeAlloc(Ntree* root, Fifo **pocetak, Fifo** kraj){
-  root->count=root->count + 1;
-  while((*pocetak)!=NULL){
-    int x=delete(pocetak, kraj);
-    switch(x){
-      case 0:
-        if(root->zero==NULL){
-          root->zero=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->zero;
-        root->count++;
-        break;
-      case 1:
-        if(root->one==NULL){
-          root->one=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->one;
-        root->count++;
-        break;
-      case 2:
-        if(root->two==NULL){
-          root->two=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->two;
-        root->count++;
-        break;
-      case 3:
-        if(root->three==NULL){
-          root->three=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->three;
-        root->count++;
-        break;
-      case 4:
-        if(root->four==NULL){
-          root->four=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->four;
-        root->count++;
-        break;
-      case 5:
-        if(root->five==NULL){
-          root->five=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->five;
-        root->count++;
-        break;
-      case 6:
-        if(root->six==NULL){
-          root->six=(Ntree*)malloc(sizeof(Ntree));
-        } 
-        root=root->six;
-        root->count++;
-        break;
-      case 7:
-        if(root->seven==NULL){
-          root->seven=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->seven;
-        root->count++;
-        break;
-      case 8:
-        if(root->eight==NULL){
-          root->eight=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->eight;
-        root->count++;
-        break;
-      case 9:
-        if(root->nine==NULL){
-          root->nine=(Ntree*)malloc(sizeof(Ntree));
-        }
-        root=root->nine;
-        root->count++;
-        break;
-    }
-  }
-  root->acount++;
-}
-
-void NtreeRead(Ntree* root, char passdown[], List* lista, int i){
-  if(root->zero!=NULL)passdown[i]='0',NtreeRead(root->zero, passdown, lista, i+1);
-  if(root->one!=NULL)passdown[i]='1',NtreeRead(root->one, passdown, lista, i+1);
-  if(root->two!=NULL)passdown[i]='2',NtreeRead(root->two, passdown, lista, i+1);
-  if(root->three!=NULL)passdown[i]='3',NtreeRead(root->three, passdown, lista, i+1);
-  if(root->four!=NULL)passdown[i]='4',NtreeRead(root->four, passdown, lista, i+1);
-  if(root->five!=NULL)passdown[i]='5',NtreeRead(root->five, passdown, lista, i+1);
-  if(root->six!=NULL)passdown[i]='6',NtreeRead(root->six, passdown, lista, i+1);
-  if(root->seven!=NULL)passdown[i]='7',NtreeRead(root->seven, passdown, lista, i+1);
-  if(root->eight!=NULL)passdown[i]='8', NtreeRead(root->eight, passdown, lista, i+1);
-  if(root->nine!=NULL)passdown[i]='9', NtreeRead(root->nine, passdown, lista, i+1);
-  if(root->acount>0){
-    passdown[i]='\0';
-    List* novi=(List*)malloc(sizeof(List));
-    strcpy(novi->value, passdown);
-    novi->freq=root->acount;
-    novi->sledeci=lista->sledeci;
-    lista->sledeci=novi;
-  }
-}
-
-void NtreeFree(Ntree* root){
-    if(root == NULL){
-        return;
-    }
-    NtreeFree(root->zero);
-    NtreeFree(root->one);
-    NtreeFree(root->two);
-    NtreeFree(root->three);
-    NtreeFree(root->four);
-    NtreeFree(root->five);
-    NtreeFree(root->six);
-    NtreeFree(root->seven);
-    NtreeFree(root->eight);
-    NtreeFree(root->nine);
-
-    free(root);
-}
-
-//i=0;i<n;i++
-//j=i+1;j<n;j++
-void SelectionSortAndSize(List* lista, int* n){
-  List* i=lista;
-
-  while(i!=NULL){
-    List* j=i->sledeci;
-    List* min=i;
-    while(j!=NULL){
-      if(j->freq>min->freq){
-        min=j;
-      }
-      j=j->sledeci;
-    }
-    char str[32];
-    strcpy(str, min->value);
-    strcpy(min->value, i->value);
-    strcpy(i->value, str);
-    int pom=min->freq;
-    min->freq=i->freq;
-    i->freq=pom;
-    i=i->sledeci;
-    *n=*n + 1;
-  }
-}
-
 void stampaj(List* lista){
-  printf("CHAR : FREQ\n");
   while(lista!=NULL){
-    printf("%s:%i\n", lista->value, lista->freq);
+    printf("%s:%i\n", lista->str, lista->afreq);
     lista=lista->sledeci;
   }
 }
 
-void FindRemove(List** lista, char x[32]) {
-    while (*lista != NULL && (*lista)->sledeci != NULL) {
-        if (strcmp((*lista)->sledeci->value, x) == 0) {
-            List* brisi = (*lista)->sledeci;
-            (*lista)->sledeci = (*lista)->sledeci->sledeci;
-            free(brisi);
-        }
-        else {
-            *lista = (*lista)->sledeci;
-        }
-    }
-    if (*lista != NULL && strcmp((*lista)->value, x) == 0) {
-        List* brisi = *lista;
-        *lista = (*lista)->sledeci;
-        free(brisi);
-    }
+void HeadAlloc(Head* root, Pipe** pocetak, Pipe** kraj);
+
+Head* TailAlloc(Tail* root, int x, bool islast){
+  switch(x%10){
+    case 0:
+      if(root->zero==NULL)root->zero=(Head*)calloc(1,sizeof(Head));
+      return root->zero;
+    case 1:
+      if(root->one==NULL)root->one=(Head*)calloc(1,sizeof(Head));
+      return root->one;
+    case 2:
+      if(root->two==NULL)root->two=(Head*)calloc(1,sizeof(Head));
+      return root->two;
+    case 3:
+      if(root->three==NULL)root->three=(Head*)calloc(1,sizeof(Head));
+      return root->three;
+    case 4:
+      if(root->four==NULL)root->four=(Head*)calloc(1,sizeof(Head));
+      return root->four;
+    case 5:
+      if(root->five==NULL)root->five=(Head*)calloc(1,sizeof(Head));
+      return root->five;
+    case 6:
+      if(root->six==NULL)root->six=(Head*)calloc(1,sizeof(Head));
+      return root->six;
+    case 7:
+      if(root->seven==NULL)root->seven=(Head*)calloc(1,sizeof(Head));
+      return root->seven;
+    case 8:
+      if(root->eight==NULL)root->eight=(Head*)calloc(1,sizeof(Head));
+      return root->eight;
+    case 9: 
+      if(root->nine==NULL)root->nine=(Head*)calloc(1,sizeof(Head));
+      return root->nine;
+  }
+  return NULL;
 }
+
+Head* NodeAlloc(Node* root, int x, bool islast){
+  switch((x%100)/10){
+    case 0:
+      if(root->zero==NULL)root->zero=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->zero, x, islast);
+    case 1:
+      if(root->one==NULL)root->one=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->one, x, islast);
+    case 2:
+       if(root->two==NULL)root->two=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->two, x, islast);
+    case 3:
+       if(root->three==NULL)root->three=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->three, x, islast);
+    case 4:
+       if(root->four==NULL)root->four=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->four, x, islast);
+    case 5:
+       if(root->five==NULL)root->five=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->five, x, islast);
+    case 6:
+       if(root->six==NULL)root->six=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->six, x, islast);
+    case 7:
+      if(root->seven==NULL)root->seven=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->seven, x, islast);
+    case 8:
+      if(root->eight==NULL)root->eight=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->eight, x, islast);
+    case 9:
+       if(root->nine==NULL)root->nine=(Tail*)calloc(1,sizeof(Tail));
+      return TailAlloc(root->nine, x, islast);
+  }
+  return NULL;
+}
+
+void HeadAlloc(Head* root, Pipe** pocetak, Pipe** kraj){
+  do{
+    int podatak=delete(pocetak, kraj);
+    if(podatak/100){
+      if(root->one==NULL)root->one=(Node*)calloc(1,sizeof(Node));
+      root=NodeAlloc(root->one, podatak, 0);
+    }else{
+      if(root->zero==NULL)root->zero=(Node*)calloc(1,sizeof(Node));
+      root=NodeAlloc(root->zero, podatak, 0);
+    }
+    root->freq++;
+  }while((*pocetak)!=NULL);
+  root->afreq++;
+}
+
 
 void kmp(char* str, int m, int* niz){
   int j=0;
@@ -257,19 +194,80 @@ void kmp(char* str, int m, int* niz){
   }
 }
 
+void ReadHead(Head* root, List* lista, char passdown[], int i, int ascii);
 
+void ReadTail(Tail* root, List* lista, char passdown[], int i, int ascii){
+  if(root->zero!=NULL)ReadHead(root->zero, lista, passdown, i+1, ascii*10);
+  if(root->one!=NULL)ReadHead(root->one, lista, passdown, i+1, ascii*10+1);
+  if(root->two!=NULL)ReadHead(root->two, lista, passdown, i+1, ascii*10+2);
+  if(root->three!=NULL)ReadHead(root->three, lista, passdown, i+1, ascii*10+3);
+  if(root->four!=NULL)ReadHead(root->four, lista, passdown, i+1, ascii*10+4);
+  if(root->five!=NULL)ReadHead(root->five, lista, passdown, i+1, ascii*10+5);
+  if(root->six!=NULL)ReadHead(root->six, lista, passdown, i+1, ascii*10+6);
+  if(root->seven!=NULL)ReadHead(root->seven, lista, passdown, i+1, ascii*10+7);
+  if(root->eight!=NULL)ReadHead(root->eight, lista, passdown, i+1, ascii*10+8);
+  if(root->nine!=NULL)ReadHead(root->nine, lista, passdown, i+1, ascii*10+9);
+}
+
+void ReadNode(Node* root, List* lista, char passdown[], int i, int ascii){
+  if(root->zero!=NULL)ReadTail(root->zero, lista, passdown, i, ascii*10);
+  if(root->one!=NULL)ReadTail(root->one, lista, passdown, i, ascii*10+1);
+  if(root->two!=NULL)ReadTail(root->two, lista, passdown, i, ascii*10+2);
+  if(root->three!=NULL)ReadTail(root->three, lista, passdown, i, ascii*10+3);
+  if(root->four!=NULL)ReadTail(root->four, lista, passdown, i, ascii*10+4);
+  if(root->five!=NULL)ReadTail(root->five, lista, passdown, i, ascii*10+5);
+  if(root->six!=NULL)ReadTail(root->six, lista, passdown, i, ascii*10+6);
+  if(root->seven!=NULL)ReadTail(root->seven, lista, passdown, i, ascii*10+7);
+  if(root->eight!=NULL)ReadTail(root->eight, lista, passdown, i, ascii*10+8);
+  if(root->nine!=NULL)ReadTail(root->nine, lista, passdown, i, ascii*10+9);
+}
+
+void ReadHead(Head* root, List* lista, char passdown[], int i, int ascii){
+  passdown[i]=(char)ascii;
+  if(root->zero!=NULL)ReadNode(root->zero, lista, passdown, i, 0);
+  if(root->one!=NULL)ReadNode(root->one, lista, passdown, i, 1);
+  if(root->afreq>0){
+    passdown[i+1]='\0';
+    List* novi=(List*)malloc(sizeof(List));
+    strcpy(novi->str, passdown);
+    novi->afreq=root->afreq;
+    novi->sledeci=lista->sledeci;
+    lista->sledeci=novi;
+  }
+}
+
+
+void SelectionSortAndSize(List* lista, int* n){
+  List* i=lista;
+
+  while(i!=NULL){
+    List* j=i->sledeci;
+    List* min=i;
+    while(j!=NULL){
+      if(j->afreq>min->afreq){
+        min=j;
+      }
+      j=j->sledeci;
+    }
+    char str[32];
+    strcpy(str, min->str);
+    strcpy(min->str, i->str);
+    strcpy(i->str, str);
+    int pom=min->afreq;
+    min->afreq=i->afreq;
+    i->afreq=pom;
+    i=i->sledeci;
+    *n=*n + 1;
+  }
+}
 
 int main(){
   FILE* dat;
-
-  Fifo* pocetak=NULL;
-  Fifo* kraj=NULL;
 
   char odluka[128];
   printf("Unesite put do datoteke, ili stdin za unos iz programa: ");
   fgets(odluka, 127, stdin);
   odluka[strcspn(odluka,"\n")]='\0';
-
 
   char input[1024];
 
@@ -278,74 +276,67 @@ int main(){
     input[strcspn(input,"\n")]='\0';
   }else{
     dat=fopen(odluka, "r");
-    if (!dat) {
+    if(!dat){
       fprintf(stderr, "Greska pri otvaranju %s\n", odluka);
       exit(1);
     }
-    int i = 0;
-    while (fscanf(dat, "%c", &input[i]) == 1) {
-        i++;
+    int i=0;
+    while(fscanf(dat, "%c", &input[i])==1){ //ucitavanje iz datoteke dok ima karaktera
+      i++;
     }
-    input[i] = '\0';
+    input[i]='\0';
     fclose(dat);
   }
 
-  Ntree* root;
-  start:
+  Pipe *pocetak, *kraj;
+  List* lista;
+  Head* root;
 
-  root=(Ntree*)malloc(sizeof(Ntree));
-  root->count=0;
+  int len, maxstrlen=0, substrlen, i;
 
-  
-  //ovaj deo funkcionise kao loop
-  printf("\nUspesno izvrseno.\n");
-  int len=strlen(input);
-  int i=0;
+  root=(Head*)calloc(1, sizeof(Head));
+  lista=(List*)calloc(1, sizeof(List));
+  pocetak=NULL;
+  kraj=NULL;
 
-  int maxstrlen=0;
-  int substrlen;
-  //while(input[i]==' '){i++;}
-  //int depth=i;
-  //while(input[i]!=' '){i++;}
-  //depth=i-depth+1;
+
+  len=strlen(input);
+
+  //TODO FIX
   while(i<len && input[i]!='\0'){
     if(input[i]!=' ' && input[i]!='\n' && input[i]!='\0'){
       substrlen=i;
-      do{
-      insert(&pocetak, &kraj, ((int)input[i])-48);
+      make(&pocetak, &kraj, (int)input[i]);
       i++;
-      }while(input[i]!=' ' && input[i]!='\0' && input[i]!='\n');
+      while(input[i]!=' ' && input[i]!='\0' && input[i]!='\n'){
+      insert(&kraj, (int)input[i]);
+      i++;
+      }
       substrlen=i-substrlen;
       if(substrlen>maxstrlen) maxstrlen=substrlen;
-      NtreeAlloc(root, &pocetak, &kraj);
+      HeadAlloc(root, &pocetak, &kraj);
     }else{
       i++;
     }
   }
   maxstrlen=maxstrlen+1; //for the terminator
 
-  List* lista=(List*)malloc(sizeof(List));
-  strcpy(lista->value, "\0");
-  lista->freq=root->count;
-  lista->sledeci=NULL;
-  
   char passdown[maxstrlen];
-  NtreeRead(root, passdown, lista, 0);
+  int nstr=0;
 
-  int n=0;
-  SelectionSortAndSize(lista->sledeci, &n);
+  ReadHead(root, lista, passdown, -1, 0);
+  SelectionSortAndSize(lista, &nstr);
 
-  printf("Unique characters: %i\n", n);
-  stampaj(lista->sledeci);
-  //finished initial freq search
+  printf("Unikatne reci: %i\nREC:FREKVENCIJA", nstr);
+  stampaj(lista);
 
   char str[1023];
   char replace[1022];
 
   while (getchar()!='\n');
-  printf("\n\nEnter a string which you want to substitute: ");
+  printf("\n\nUnesite rec koju zelite da zamenite: ");
   fgets(str, 1022, stdin);
-  printf("Enter a string to replace with: ");
+  printf("Unesite rec sa kojom zelite da prethodnu zamenite: ");
   fgets(replace, 1021, stdin);
 
   str[strcspn(str, "\n")]='\0';
@@ -384,30 +375,21 @@ int main(){
       j=kmptable[j-1];
     }
   }
-  FindRemove(&lista, str);
   puts(input);
 
-  printf("Napisi \"write\" da bi uneo promene u datoteku, bilosta drugo za nastavak: ");
-  char izbor[7];
-  fgets(izbor, 6, stdin);
-  if(strcmp(izbor,"write")==0){
-    if(strcmp(odluka,"stdin")==0){
-      getchar();
-      printf("Unesite ime datoteke: ");
-      fgets(odluka, 127, stdin);
-      odluka[strcspn(odluka, "\n")] = '\0';
-    }
-    dat=fopen(odluka,"w");
-    if (!dat) {
+  if(strcmp(odluka,"stdin")==0){
+    getchar();
+    printf("Unesite ime datoteke: ");
+    fgets(odluka, 127, stdin);
+    odluka[strcspn(odluka, "\n")] = '\0';
+  }
+  dat=fopen(odluka,"w");
+  if (!dat) {
       fprintf(stderr, "Greska pri otvaranju %s\n", odluka);
       exit(1);
-    }
-    fprintf(dat, "%s", input);
-    fclose(dat);
-  }else{
-    NtreeFree(root);
-    root=NULL;
-    goto start;
   }
+  fprintf(dat, "%s", input);
+  fclose(dat);
   return 0;
-}
+  }
+
