@@ -79,6 +79,7 @@ int delete(Pipe **pocetak, Pipe **kraj){
 }
 
 void stampaj(List* lista){
+  printf("\n");
   while(lista!=NULL){
     printf("%s:%i\n", lista->str, lista->afreq);
     lista=lista->sledeci;
@@ -261,38 +262,48 @@ void SelectionSortAndSize(List* lista, int* n){
   }
 }
 
+
 int main(){
   FILE* dat;
 
   char odluka[128];
-  printf("Unesite put do datoteke, ili stdin za unos iz programa: ");
+
+  printf("Unesite ime datoteke ili stdin: ");
   fgets(odluka, 127, stdin);
-  odluka[strcspn(odluka,"\n")]='\0';
+  odluka[strcspn(odluka, "\n")]='\0';
 
-  char input[1024];
-
-  if(strcmp(odluka, "stdin")==0){ 
-    fgets(input,1023,stdin);
-    input[strcspn(input,"\n")]='\0';
-  }else{
+  if(strcmp(odluka, "stdin")!=0){
     dat=fopen(odluka, "r");
-    if(!dat){
-      fprintf(stderr, "Greska pri otvaranju %s\n", odluka);
-      exit(1);
-    }
-    int i=0;
-    while(fscanf(dat, "%c", &input[i])==1){ //ucitavanje iz datoteke dok ima karaktera
-      i++;
-    }
-    input[i]='\0';
-    fclose(dat);
+  }else{
+    dat=stdin;
   }
+
+  char* input=malloc(65);
+  int maxlen=64;
+  int len=0;
+
+  char ch;
+  while((ch = fgetc(dat)) != EOF){
+    if(len >= maxlen){
+      maxlen += 8; 
+      char* temp=realloc(input, maxlen+1);
+      if(temp==NULL){
+        fprintf(stderr, "Greska pri alokaciji!\n");
+        free(input);
+        return 1;
+      }
+      input=temp;
+    }
+    input[len]=(char)ch;
+    len++;
+  }
+  input[len]='\0';
 
   Pipe *pocetak, *kraj;
   List* lista;
   Head* root;
 
-  int len, maxstrlen=0, substrlen, i;
+  int maxstrlen=0, substrlen, i;
 
   root=(Head*)calloc(1, sizeof(Head));
   lista=(List*)calloc(1, sizeof(List));
@@ -333,7 +344,6 @@ int main(){
   char str[1023];
   char replace[1022];
 
-  while (getchar()!='\n');
   printf("\n\nUnesite rec koju zelite da zamenite: ");
   fgets(str, 1022, stdin);
   printf("Unesite rec sa kojom zelite da prethodnu zamenite: ");
@@ -382,6 +392,11 @@ int main(){
     printf("Unesite ime datoteke: ");
     fgets(odluka, 127, stdin);
     odluka[strcspn(odluka, "\n")] = '\0';
+  }
+  if(strcmp(odluka,"stdin")==0){
+    printf("Ne moze se pisati u stdin.");
+    if(dat)fclose(dat);
+    return 0;
   }
   dat=fopen(odluka,"w");
   if (!dat) {
